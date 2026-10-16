@@ -547,7 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateClock, 1000);
   updateClock();
 
-  logAudit("Station 04 // GHOST-IN-THE-LENS Triad Engine Initialized", "info");
+  logAudit("Station 03 // GHOST-IN-THE-LENS Triad Engine Initialized", "info");
   logAudit("Biometric AI Checkpoint: Ready for Intruder / CEO Spoof", "info");
 
   // Run initial baseline

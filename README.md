@@ -1,4 +1,4 @@
-# 🛡️ ITC // Interactive Cybersecurity Exhibition (4-Station Platform)
+# 🛡️ ITC // Interactive Cybersecurity Exhibition (3-Station Platform)
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/framework-Flask-black.svg)](https://flask.palletsprojects.com/)
@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Design](https://img.shields.io/badge/ITC%20Design%20System-V2.5-red.svg)](#)
 
-A high-impact, four-station interactive cybersecurity exhibition platform built for live university showcases, hackathons, and security awareness demonstrations.
+A high-impact, three-station interactive cybersecurity exhibition platform built for live university showcases, hackathons, and security awareness demonstrations.
 
 ---
 
@@ -16,23 +16,14 @@ A high-impact, four-station interactive cybersecurity exhibition platform built 
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                           ITC CYBERSECURITY EXHIBITION RIG                              │
 ├────────────────────────────┬────────────────────────────┬───────────────────────────────┤
-│  STATION 1: BREACH TRAIL   │  STATION 2: BRUTE-FORCE    │  STATION 3: SOCIAL ENG. RADAR │
-│  Port 5000                 │  Port 5001                 │  Port 5002                    │
+│  STATION 1: BREACH TRAIL   │  STATION 2: BRUTE-FORCE    │  STATION 3: GHOST-IN-THE-LENS │
+│  Port 5000                 │  Port 5001                 │  Port 5003                    │
 │  ────────────────────────  │  ────────────────────────  │  ───────────────────────────  │
-│  • WAN & Subnet Topology   │  • Matrix Rain Stream      │  • WiFi Proximity Radar       │
-│  • Red/Blue Team Controls  │  • 3D Candidate Tumbler    │  • Live Phone Mirroring       │
-│  • Multi-Stage Chains      │  • RockYou Leaked Rank     │  • Hardware Sensor Telemetry  │
-│  • SIEM Terminal Feed      │  • Entropy Mathematics     │  • Remote Security Lockout    │
-├────────────────────────────┴────────────────────────────┴───────────────────────────────┤
-│  STATION 4: GHOST-IN-THE-LENS (Adversarial Biometrics & Fast Gradient Sign Method)      │
-│  Port 5003                                                                              │
-│  ─────────────────────────────────────────────────────────────────────────────────────  │
-│  • Live Laptop Webcam Biometric Scan with 68 Facial Landmark Mesh Reticles              │
-│  • PyTorch Biometric Classifier (Unauthorized Intruder vs Facility CEO Marcus Vance)    │
-│  • Triad Multi-Vector FGSM Attack Engine (Amplitude, Frequency Mask, Vector Alignment)  │
-│  • Human Perception vs AI Neural Heatmap Activation Switcher                            │
-│  • Side-by-Side Facility CEO Match Dossier & Robotic AI Speech Synthesizer              │
-└─────────────────────────────────────────────────────────────────────────────────────────┘
+│  • WAN & Subnet Topology   │  • Matrix Rain Stream      │  • Live Webcam Face Scan      │
+│  • Red/Blue Team Controls  │  • 3D Candidate Tumbler    │  • PyTorch Biometric CNN      │
+│  • Multi-Stage Chains      │  • RockYou Leaked Rank     │  • Triad FGSM Attack Engine   │
+│  • SIEM Terminal Feed      │  • Entropy Mathematics     │  • AI Vision Heatmap Switcher │
+└────────────────────────────┴────────────────────────────┴───────────────────────────────┘
 ```
 
 ---
@@ -60,17 +51,7 @@ A gamified arcade-style race against the machine demonstrating why password comp
 
 ---
 
-### 📡 Station 3 // Social Engineering: Proximity Radar & Device Mirror
-**URL:** `http://localhost:5002`
-
-An interactive demonstration of social engineering and deceptive phishing payloads:
-- **Proximity Radar Scanner:** Real-time radar HUD displaying simulated nearby devices with distance readouts.
-- **Live Phone Device Mirroring:** Connect any real smartphone via WiFi/LAN to stream live gyro orientation, battery telemetry, and touch interactions directly to the exhibition dashboard.
-- **Auto-Lockout & Blaster:** Instant security lockdown simulation with synthesized cyber alarm siren and robotic voice alerts.
-
----
-
-### 👁️ Station 4 // Biometrics: GHOST-IN-THE-LENS (Adversarial Biometrics)
+### 👁️ Station 3 // Biometrics: GHOST-IN-THE-LENS (Adversarial Biometrics)
 **URL:** `http://localhost:5003`
 
 A live demonstration of how AI facial recognition models can be deceived using invisible mathematical noise (**Adversarial Machine Learning**):
@@ -93,7 +74,7 @@ Double-click:
 ```cmd
 START_ALL_STATIONS.bat
 ```
-*Automatically spins up all 4 Flask servers on Ports 5000, 5001, 5002, and 5003.*
+*Automatically spins up all 3 Flask servers on Ports 5000, 5001, and 5003.*
 
 To stop all stations cleanly:
 ```cmd
@@ -113,11 +94,8 @@ cd station-1-breach-trail && python app.py
 # Station 2 (Port 5001)
 cd station-2-brute-force && python app.py
 
-# Station 3 (Port 5002)
-cd station-3-social-engineering && python app.py
-
-# Station 4 (Port 5003)
-cd station-4-adversarial-biometrics && python app.py
+# Station 3 (Port 5003)
+cd station-3-ghost-in-the-lens && python app.py
 ```
 
 ---

@@ -1,5 +1,5 @@
 """
-ITC Cybersecurity Exhibit // Station 04
+ITC Cybersecurity Exhibit // Station 03
 PROJECT: GHOST-IN-THE-LENS (Adversarial Biometrics)
 Live Demonstration of Fast Gradient Sign Method (FGSM) Machine Learning Attack
 Port: 5003
@@ -298,7 +298,7 @@ def upload_image():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  ITC // STATION 04: GHOST-IN-THE-LENS")
+    print("  ITC // STATION 03: GHOST-IN-THE-LENS")
     print("  Adversarial Biometrics // Triad Attack FGSM Engine")
     print("=" * 60)
     print("  Live Checkpoint Dashboard : http://localhost:5003")
