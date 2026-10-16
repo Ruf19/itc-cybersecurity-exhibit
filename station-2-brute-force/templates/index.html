@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITC // CRYPTOGRAPHY · BRUTE-FORCE VAULT CRACKER</title>
+    <!-- Google Fonts: Orbitron, Rajdhani, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" type="image/png" href="/static/img/itc-logo.png">
+</head>
+<body>
+
+    <!-- Ambient Background Glows -->
+    <div class="ambient-glow glow-left"></div>
+    <div class="ambient-glow glow-right"></div>
+
+    <!-- ═══════ TOP BAR ═══════ -->
+    <header id="topbar">
+        <div class="logo-section">
+            <div class="logo-aura">
+                <img src="/static/img/itc-logo.png" alt="ITC Logo" class="logo-img">
+            </div>
+            <div class="logo-text">
+                <span class="logo-title">ITC // CRYPTOGRAPHY</span>
+                <span class="logo-subtitle">BRUTE-FORCE CRACKER</span>
+            </div>
+        </div>
+
+        <div class="topbar-center">
+            <div class="station-chip">
+                <span class="chip-accent">●</span>
+                <span class="chip-text">STATION 2 // PASSWORD COMPLEXITY & DICTIONARY ATTACK</span>
+            </div>
+        </div>
+
+        <div class="topbar-controls">
+            <div class="hasher-speed-meter">
+                <span class="speed-pulse"></span>
+                <span class="speed-icon">⚡</span>
+                <span class="speed-label">LOCAL RIG:</span>
+                <span class="speed-val" id="top-hash-speed">COMPUTING...</span>
+            </div>
+            <button class="ctrl-btn" id="audio-btn" onclick="cracker.toggleAudio()">
+                <span class="btn-icon">🔊</span> SFX ON
+            </button>
+            <button class="ctrl-btn btn-top-reset" onclick="cracker.resetStation()">
+                <span class="btn-icon">↺</span> RESET
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══════ MAIN SPLIT SCREEN ═══════ -->
+    <main id="main-content">
+
+        <!-- ── LEFT SPLIT: CLEAN & TIDY VAULT LOGIN ── -->
+        <section id="vault-panel">
+            
+            <div class="vault-card">
+                <!-- Clean Header -->
+                <div class="vault-header">
+                    <div class="vault-title-wrap">
+                        <h2 class="vault-title">Vault Access</h2>
+                        <p class="vault-sub">Password Entropy & Dictionary Attack Test</p>
+                    </div>
+                </div>
+
+                <!-- Clean Password Input -->
+                <div class="input-group">
+                    <label for="password-input" class="input-label">Target Password</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="password-input" placeholder="Type a password to test..." autocomplete="off" spellcheck="false">
+                        <button class="btn-clear" onclick="cracker.clearInput()" title="Clear">✕</button>
+                    </div>
+                </div>
+
+                <!-- Clean Entropy & Strength Meter -->
+                <div class="entropy-card">
+                    <div class="entropy-header">
+                        <span class="entropy-label">Strength Evaluation</span>
+                        <div class="entropy-status">
+                            <span class="entropy-tier-badge" id="entropy-tier">EMPTY</span>
+                            <span class="entropy-bits-val" id="entropy-bits">0.0 Bits</span>
+                        </div>
+                    </div>
+                    
+                    <div class="entropy-track">
+                        <div class="entropy-fill" id="entropy-fill"></div>
+                    </div>
+
+                    <!-- Hidden keyspace container to preserve JS binding without clutter -->
+                    <span id="keyspace-size" style="display:none;">0</span>
+
+                    <div class="char-pills">
+                        <span class="c-pill" id="badge-lower">a-z Lower</span>
+                        <span class="c-pill" id="badge-upper">A-Z Upper</span>
+                        <span class="c-pill" id="badge-digit">0-9 Number</span>
+                        <span class="c-pill" id="badge-symbol">!@# Symbol</span>
+                        <span class="c-pill" id="badge-length">12+ Length</span>
+                    </div>
+                </div>
+
+                <!-- Clean Presets (Tidy Horizontal Pills) -->
+                <div class="presets-section">
+                    <span class="presets-label">Sample Passwords:</span>
+                    <div class="presets-pills">
+                        <button class="preset-pill weak" onclick="cracker.setPreset('qwerty')">qwerty</button>
+                        <button class="preset-pill weak" onclick="cracker.setPreset('oran2026')">oran2026</button>
+                        <button class="preset-pill med" onclick="cracker.setPreset('P@ssw0rd2026!')">P@ssw0rd2026!</button>
+                        <button class="preset-pill strong" onclick="cracker.setPreset('Correct-Horse-Battery-Staple')">Correct-Horse...</button>
+                        <button class="preset-pill ultra" onclick="cracker.setPreset('kX9#m$L2!vQ8@')">kX9#m$L2!vQ8@</button>
+                    </div>
+                </div>
+
+                <!-- Clean Algo Selector -->
+                <div class="algo-row">
+                    <span class="algo-label">Hash Algorithm:</span>
+                    <div class="algo-toggle">
+                        <button class="algo-btn active" data-algo="sha256" onclick="cracker.setAlgo('sha256')">SHA-256</button>
+                        <button class="algo-btn" data-algo="md5" onclick="cracker.setAlgo('md5')">MD5</button>
+                    </div>
+                </div>
+
+                <!-- Clean Action Button -->
+                <button class="btn-engage" id="btn-engage" onclick="cracker.startCracking()">
+                    <span class="engage-icon">⚡</span>
+                    <span class="engage-text">Launch Brute-Force Attack</span>
+                </button>
+
+                <!-- Clean Stopwatch -->
+                <div class="stopwatch-card">
+                    <div class="sw-header">
+                        <span class="sw-label">CRACK TIME ELAPSED</span>
+                        <span class="sw-status" id="sw-status">STANDBY</span>
+                    </div>
+                    <div class="timer-digits-wrap">
+                        <span class="timer-digits" id="timer-display">00:00.000</span>
+                    </div>
+                </div>
+
+                <!-- Clean Analogy Quote -->
+                <div class="analogy-card">
+                    <p class="analogy-text">
+                        “A hacker doesn't guess your password; they have a machine read the entire dictionary to the lock at a million words per second.”
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ── RIGHT SPLIT: MATRIX CRACKING CASCADE CANVAS & TELEMETRY HUD ── -->
+        <section id="matrix-stage">
+            
+            <!-- CRT Scanline & Vignette Overlay -->
+            <div class="crt-overlay"></div>
+            <div class="crt-scanlines"></div>
+
+            <!-- Cascading Canvas Stream -->
+            <canvas id="matrix-canvas"></canvas>
+
+            <!-- Head-Up Display Overlay (HUD) -->
+            <div id="matrix-hud">
+                
+                <!-- Target Hash Banner -->
+                <div class="hud-box target-hash-box">
+                    <div class="hud-box-header">
+                        <span class="hud-tag"><span class="hud-blink-dot"></span>TARGET CRYPTOGRAPHIC DIGEST:</span>
+                        <span class="hud-subtag">REAL-TIME HASHLIB REVERSE LOOKUP</span>
+                    </div>
+                    <div class="hud-val hash-hex" id="hud-target-hash">WAITING FOR INPUT...</div>
+                </div>
+
+                <!-- Tumbler Unscrambler Slots -->
+                <div class="tumbler-container">
+                    <div class="tumbler-header">
+                        <span class="tumbler-label">CANDIDATE SLOTS // REAL-TIME CONVERGENCE:</span>
+                        <span class="tumbler-mode" id="tumbler-mode">IDLE</span>
+                    </div>
+                    <div class="tumbler-frame">
+                        <div class="tumbler-slots" id="tumbler-slots">
+                            <span class="slot empty">_</span>
+                            <span class="slot empty">_</span>
+                            <span class="slot empty">_</span>
+                            <span class="slot empty">_</span>
+                            <span class="slot empty">_</span>
+                            <span class="slot empty">_</span>
+                            <span class="slot empty">_</span>
+                            <span class="slot empty">_</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time telemetry meters -->
+                <div class="telemetry-bar">
+                    <div class="tel-item">
+                        <span class="tel-indicator"></span>
+                        <span class="tel-label">RIG RATE:</span>
+                        <span class="tel-val font-orbit" id="hud-hash-rate">0 H/s</span>
+                    </div>
+                    <div class="tel-item">
+                        <span class="tel-indicator"></span>
+                        <span class="tel-label">WORDS TRIED:</span>
+                        <span class="tel-val font-orbit" id="hud-words-tried">0</span>
+                    </div>
+                    <div class="tel-item">
+                        <span class="tel-indicator"></span>
+                        <span class="tel-label">ATTACK:</span>
+                        <span class="tel-val" id="hud-attack-mode">HYBRID DICT + RULES</span>
+                    </div>
+                    <div class="tel-item attempt-item">
+                        <span class="tel-indicator active"></span>
+                        <span class="tel-label">CURRENT ATTEMPT:</span>
+                        <span class="tel-val candidate-word font-orbit" id="hud-current-word">IDLE</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RESULT OVERLAY (COMPROMISED OR SECURE) -->
+            <div id="result-modal" class="hidden">
+                <div class="result-backdrop" onclick="cracker.closeModal()"></div>
+                <div class="result-card" id="result-card">
+                    <!-- Injected dynamically: Breach Alert or Victory Shield -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="/static/js/cracker.js"></script>
+</body>
+</html>

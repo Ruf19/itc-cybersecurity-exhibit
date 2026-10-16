@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITC // RED TEAM · BREACH TRAIL</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" type="image/png" href="/static/img/itc-logo.png">
+</head>
+<body>
+
+    <!-- ═══════ TOP BAR (ITC DESIGN SYSTEM V2) ═══════ -->
+    <header id="topbar">
+        <div class="logo-section">
+            <img src="/static/img/itc-logo.png" alt="ITC Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">ITC // RED TEAM</span>
+                <span class="logo-subtitle">BREACH TRAIL</span>
+            </div>
+        </div>
+
+        <div class="topbar-center">
+            <div class="station-chip">
+                <span class="chip-accent">●</span>
+                <span class="chip-text">CYBER RANGE // LIVE BREACH ENVIRONMENT</span>
+            </div>
+        </div>
+
+        <div class="topbar-controls">
+            <!-- QUICK RESET IN TOPBAR -->
+            <button class="ctrl-btn btn-top-reset" onclick="simulator.resetAll()">↺ RESET</button>
+            <button class="ctrl-btn speed-btn active" id="speed-1x" onclick="simulator.setSpeed(1)">1x</button>
+            <button class="ctrl-btn speed-btn" id="speed-2x" onclick="simulator.setSpeed(2)">2x</button>
+            <button class="ctrl-btn" id="audio-btn" onclick="simulator.toggleAudio()">🔊 SFX ON</button>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">LIVE RANGE</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════ MAIN VIEWPORT (2 COLUMNS: STAGE ON LEFT, SIDEBAR ALL THE WAY DOWN ON RIGHT) ═══════ -->
+    <main id="main-content">
+
+        <!-- ── LEFT COLUMN: CANVAS ON TOP + LIVE LOGS TERMINAL ON BOTTOM ── -->
+        <div id="center-stage">
+            
+            <!-- Canvas Viewport -->
+            <div id="canvas-container">
+                <canvas id="network-canvas"></canvas>
+                
+                <!-- Floating Canvas Ingress Banner -->
+                <div class="canvas-banner">
+                    <span class="banner-prompt">>_</span>
+                    <span class="banner-title">BREACH TRAIL // ENTERPRISE TOPOLOGY</span>
+                    <span class="banner-sub">Packet Tracer Architecture · 16 Nodes · External C2 Threat Zone</span>
+                </div>
+
+                <!-- Dynamic Tooltip -->
+                <div id="tooltip" class="hidden"></div>
+            </div>
+
+            <!-- Live Logs Terminal Sitting Directly Under The Canvas -->
+            <footer id="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-title">
+                        <span class="prompt">>_</span>
+                        <span class="term-title-text">SECURITY OPERATIONS EVENT LOG // REAL-TIME NETWORK TELEMETRY</span>
+                        <span class="log-count-badge" id="log-count">1 ENTRY</span>
+                    </div>
+                    <div class="terminal-actions">
+                        <button class="terminal-clear" onclick="simulator.clearLog()">CLEAR CONSOLE</button>
+                    </div>
+                </div>
+                <div id="log-content">
+                    <div class="log-entry log-system">[SYS] ITC // RED TEAM · BREACH TRAIL environment initialized. Ready.</div>
+                </div>
+            </footer>
+
+        </div>
+
+        <!-- ── RIGHT COLUMN: SIDEBAR EXTENDING ALL THE WAY DOWN TO THE BOTTOM ── -->
+        <aside id="sidebar">
+
+            <!-- ── QUICK ACTION TOP BAR: RESET & WHOLE BREACH (AT THE VERY TOP) ── -->
+            <div class="top-action-bar">
+                <button class="btn btn-breacher" onclick="simulator.triggerWholeBreach()">
+                    <span class="breach-icon">🚨</span>
+                    <span class="breach-text">WHOLE BREACH (ALL VECTORS)</span>
+                </button>
+                <button class="btn btn-quick-reset" onclick="simulator.resetAll()">
+                    ↺ PURGE & RESET TOPOLOGY
+                </button>
+            </div>
+
+            <!-- ── ATTACK VECTORS & CHAIN ATTACKS (CLICK ON / CLICK OFF TOGGLES) ── -->
+            <div class="panel">
+                <div class="panel-header header-attack">
+                    <span class="header-icon">⚡</span>
+                    <span>ATTACK VECTORS</span>
+                    <span class="panel-badge badge-red">TOGGLE ON / OFF</span>
+                </div>
+                <div class="panel-body">
+                    <div class="btn-grid">
+                        <!-- Chained Attack 1: APT Multi-Stage Kill Chain -->
+                        <button class="btn btn-attack btn-chain" onclick="simulator.toggleAttack('chain_apt')" id="btn-chain_apt">
+                            <span class="btn-icon">⛓️</span>
+                            <div class="btn-content">
+                                <span class="btn-label">APT Kill Chain Breach</span>
+                                <span class="btn-hint">External C2 ➔ Phish ➔ AD Takeover ➔ Exfiltration</span>
+                            </div>
+                        </button>
+
+                        <!-- Chained Attack 2: Supply Chain Zero-Day -->
+                        <button class="btn btn-attack btn-chain" onclick="simulator.toggleAttack('chain_supply')" id="btn-chain_supply">
+                            <span class="btn-icon">📦</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Supply Chain Zero-Day</span>
+                                <span class="btn-hint">Cloud S3 Poisoned ➔ Core Switch ➔ Workstation</span>
+                            </div>
+                        </button>
+
+                        <!-- Botnet DDoS -->
+                        <button class="btn btn-attack" onclick="simulator.toggleAttack('ddos')" id="btn-ddos">
+                            <span class="btn-icon">💥</span>
+                            <div class="btn-content">
+                                <span class="btn-label">External Botnet DDoS</span>
+                                <span class="btn-hint">Volumetric flood outside WAN targeting edge</span>
+                            </div>
+                        </button>
+
+                        <!-- Phishing Campaign -->
+                        <button class="btn btn-attack" onclick="simulator.toggleAttack('phishing')" id="btn-phishing">
+                            <span class="btn-icon">🎣</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Spear-Phishing Payload</span>
+                                <span class="btn-hint">Adversary weaponizes malicious employee attachment</span>
+                            </div>
+                        </button>
+
+                        <!-- SQL Injection -->
+                        <button class="btn btn-attack" onclick="simulator.toggleAttack('sqli')" id="btn-sqli">
+                            <span class="btn-icon">💉</span>
+                            <div class="btn-content">
+                                <span class="btn-label">SQL Injection Exfiltration</span>
+                                <span class="btn-hint">Database extraction via DMZ web server bypass</span>
+                            </div>
+                        </button>
+
+                        <!-- Lateral Ransomware -->
+                        <button class="btn btn-attack" onclick="simulator.toggleAttack('ransomware')" id="btn-ransomware">
+                            <span class="btn-icon">🔒</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Ransomware Lateral Worm</span>
+                                <span class="btn-hint">Internal subnet propagation encrypting shares</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── DEFENSIVE CONTROLS PANEL (CLICK ON / CLICK OFF TOGGLES) ── -->
+            <div class="panel">
+                <div class="panel-header header-defense">
+                    <span class="header-icon">🛡</span>
+                    <span>DEFENSIVE CONTROLS</span>
+                    <span class="panel-badge badge-blue">TOGGLE ON / OFF</span>
+                </div>
+                <div class="panel-body">
+                    <div class="btn-grid">
+                        <button class="btn btn-defense" onclick="simulator.toggleDefense('threatintel')" id="btn-threatintel">
+                            <span class="btn-icon">🚫</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Threat Intel C2 Blackhole</span>
+                                <span class="btn-hint">Blocks outside adversary & botnet at WAN ingress</span>
+                            </div>
+                        </button>
+                        <button class="btn btn-defense" onclick="simulator.toggleDefense('zerotrust')" id="btn-zerotrust">
+                            <span class="btn-icon">🔐</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Zero-Trust Identity (AD Protect)</span>
+                                <span class="btn-hint">Stops Active Directory domain escalation</span>
+                            </div>
+                        </button>
+                        <button class="btn btn-defense" onclick="simulator.toggleDefense('firewall')" id="btn-firewall">
+                            <span class="btn-icon">🧱</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Perimeter Firewall / IPS</span>
+                                <span class="btn-hint">Filters volumetric floods & perimeter exploits</span>
+                            </div>
+                        </button>
+                        <button class="btn btn-defense" onclick="simulator.toggleDefense('emailfilter')" id="btn-emailfilter">
+                            <span class="btn-icon">📧</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Email Gateway Filter</span>
+                                <span class="btn-hint">Quarantines phishing links & attachments</span>
+                            </div>
+                        </button>
+                        <button class="btn btn-defense" onclick="simulator.toggleDefense('waf')" id="btn-waf">
+                            <span class="btn-icon">🌐</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Web Application Firewall</span>
+                                <span class="btn-hint">Intercepts SQLi queries before database</span>
+                            </div>
+                        </button>
+                        <button class="btn btn-defense" onclick="simulator.toggleDefense('endpoint')" id="btn-endpoint">
+                            <span class="btn-icon">💻</span>
+                            <div class="btn-content">
+                                <span class="btn-label">Endpoint Protection (EDR)</span>
+                                <span class="btn-hint">Isolates workstations against ransomware</span>
+                            </div>
+                        </button>
+                        <button class="btn btn-defense" onclick="simulator.toggleDefense('segmentation')" id="btn-segmentation">
+                            <span class="btn-icon">🔗</span>
+                            <div class="btn-content">
+                                <span class="btn-label">VLAN Segmentation</span>
+                                <span class="btn-hint">Prevents lateral spread across switch ports</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── NODE DETAILS INSPECTOR ── -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="header-icon">ℹ</span>
+                    <span>NODE INSPECTION</span>
+                </div>
+                <div class="panel-body" id="node-info">
+                    <p class="hint-text">> Click or drag any hardware node to inspect telemetry.</p>
+                </div>
+            </div>
+
+            <!-- ── LIVE TELEMETRY STATS ── -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="header-icon">📊</span>
+                    <span>LIVE PACKET TELEMETRY</span>
+                </div>
+                <div class="panel-body">
+                    <div class="stat-row">
+                        <span class="stat-dot" style="background:var(--success)"></span>
+                        <span class="stat-label">Normal Authorized Flow</span>
+                        <span class="stat-value" id="stat-normal">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-dot" style="background:var(--hot-red)"></span>
+                        <span class="stat-label">Attack Wave Packets</span>
+                        <span class="stat-value" id="stat-attack">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-dot" style="background:var(--lift)"></span>
+                        <span class="stat-label">Shield Deflections</span>
+                        <span class="stat-value" id="stat-blocked">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-dot" style="background:var(--warn)"></span>
+                        <span class="stat-label">Nodes Breached</span>
+                        <span class="stat-value" id="stat-compromised">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── COLOR LEGEND ── -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="header-icon">◎</span>
+                    <span>COLOR LEGEND</span>
+                </div>
+                <div class="panel-body">
+                    <div class="legend-row"><span class="legend-dot" style="background:var(--success)"></span> Normal Authorized Flow</div>
+                    <div class="legend-row"><span class="legend-dot" style="background:var(--hot-red)"></span> Hostile Packet / Adversary</div>
+                    <div class="legend-row"><span class="legend-dot" style="background:var(--lift)"></span> Intercepted / Shield Active</div>
+                    <div class="legend-row"><span class="legend-dot" style="background:var(--warn)"></span> Node Compromised / Alert</div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script src="/static/js/simulator.js"></script>
+</body>
+</html>
