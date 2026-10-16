@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITC // STATION 04 // GHOST-IN-THE-LENS // ADVERSARIAL BIOMETRICS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="grid-bg"></div>
+
+  <!-- ─── TOPBAR ─────────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="/static/img/itc-logo.png" alt="ITC" class="logo" />
+      <div class="topbar-title">
+        <span class="station-tag">STATION 04 // ADVERSARIAL MACHINE LEARNING</span>
+        <h1>PROJECT <span class="accent-red">GHOST-IN-THE-LENS</span></h1>
+      </div>
+    </div>
+    <div class="topbar-center">
+      <div class="model-badge mono">
+        <span class="mb-label">TARGET CLASSIFIER</span>
+        <span class="mb-val accent-cyan">PyTorch MobileNetV2-BiometricCNN (2-Class)</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="checkpoint-indicator" id="topCheckpointBadge">
+        <div class="pulse-dot active" id="pulseDot"></div>
+        <span id="checkpointStatusText">FACILITY GATE 01 ACTIVE</span>
+      </div>
+      <div class="time-display mono" id="clockDisplay">00:00:00</div>
+    </div>
+  </header>
+
+  <!-- ─── MAIN DASHBOARD ─────────────────────────────────────────────── -->
+  <main class="dashboard">
+
+    <!-- ── COL 1: FACILITY CHECKPOINT SCANNER ──────────────────────── -->
+    <section class="panel panel-scanner">
+      <div class="panel-header">
+        <span class="panel-icon">👁️</span>
+        <h2>CHECKPOINT <span class="accent-cyan">SCANNER</span></h2>
+        <div class="panel-tag">FACIAL LANDMARK FEED</div>
+      </div>
+
+      <div class="scanner-body">
+        <!-- Vision Mode Selector (Magic Concept: Human vs AI Vision) -->
+        <div class="vision-mode-bar">
+          <button class="vision-btn active" id="btnHumanVision" onclick="setVisionMode('human')">
+            👁️ HUMAN PERCEPTION
+          </button>
+          <button class="vision-btn" id="btnAiVision" onclick="setVisionMode('ai')">
+            🤖 AI NEURAL HEATMAP
+          </button>
+        </div>
+
+        <!-- Subject Viewport with Laser Beam & Mesh -->
+        <div class="camera-viewport-frame" id="viewportFrame">
+          <div class="camera-corner c-tl"></div>
+          <div class="camera-corner c-tr"></div>
+          <div class="camera-corner c-bl"></div>
+          <div class="camera-corner c-br"></div>
+          
+          <!-- Laser Scan Line -->
+          <div class="laser-scan-line" id="laserBeam"></div>
+          
+          <!-- Biometric Face Wireframe Grid -->
+          <div class="face-mesh-overlay" id="faceMeshOverlay">
+            <svg class="mesh-svg" viewBox="0 0 200 200">
+              <polygon points="100,30 135,50 145,95 130,150 100,175 70,150 55,95 65,50" class="mesh-contour" />
+              <line x1="100" y1="30" x2="100" y2="175" class="mesh-line" />
+              <line x1="75" y1="75" x2="125" y2="75" class="mesh-line" />
+              <line x1="70" y1="105" x2="130" y2="105" class="mesh-line" />
+              <line x1="80" y1="135" x2="120" y2="135" class="mesh-line" />
+              <!-- Landmark points -->
+              <circle cx="85" cy="75" r="3" class="mesh-dot" />
+              <circle cx="115" cy="75" r="3" class="mesh-dot" />
+              <circle cx="100" cy="100" r="3" class="mesh-dot" />
+              <circle cx="88" cy="135" r="3" class="mesh-dot" />
+              <circle cx="112" cy="135" r="3" class="mesh-dot" />
+              <circle cx="100" cy="175" r="3" class="mesh-dot" />
+            </svg>
+          </div>
+
+          <!-- Subject Image Display -->
+          <img id="subjectImg" src="/static/img/hacker.jpg" alt="Subject Scan" class="subject-image" />
+
+          <!-- Live Webcam Video Stream -->
+          <video id="webcamVideo" autoplay playsinline muted class="subject-video" style="display:none"></video>
+          <canvas id="webcamCanvas" width="400" height="400" style="display:none"></canvas>
+
+          <!-- Holographic Spoofed Watermark Stamp -->
+          <div class="spoof-stamp" id="spoofStamp" style="display:none">
+            <div class="stamp-border">
+              <span class="stamp-main">IDENTITY OVERRIDE</span>
+              <span class="stamp-sub mono">CEO CLEARANCE GRANTED</span>
+            </div>
+          </div>
+
+          <!-- Live Scanning HUD Overlay -->
+          <div class="hud-overlay">
+            <div class="hud-top-left mono" id="hudLiveTag">LIVE FEED: STANDBY</div>
+            <div class="hud-top-right mono" id="hudFov">FOV: 84° // DEPTH: 1.2m</div>
+            <div class="hud-bottom-left mono" id="hudLandmarks">68 LANDMARKS TRACKED</div>
+          </div>
+        </div>
+
+        <!-- Live Camera Action Row -->
+        <div class="webcam-controls-row">
+          <button class="btn btn-primary btn-sm" id="btnToggleWebcam" style="width:100%;justify-content:center" onclick="toggleWebcam()">
+            📹 START LIVE WEBCAM SCAN
+          </button>
+          <button class="btn btn-danger btn-sm" id="btnSnapWebcam" style="display:none;width:100%;justify-content:center" onclick="captureWebcamSnapshot()">
+            📸 CAPTURE INTRUDER FACE
+          </button>
+        </div>
+
+        <!-- Preset Target Selector (ONLY 2 TARGETS: CEO vs INTRUDER) -->
+        <div class="preset-section">
+          <div class="section-label">OR SELECT IDENTITY TARGET:</div>
+          <div class="preset-buttons">
+            <button class="btn-preset active" id="btnHacker" onclick="selectSubject('hacker')">
+              <span>🦹</span>
+              <div>
+                <div class="btn-preset-name">BLACK-HAT INTRUDER</div>
+                <div class="btn-preset-sub">Status: Access Denied (Threat Lvl 4)</div>
+              </div>
+            </button>
+            <button class="btn-preset" id="btnCeo" onclick="selectSubject('ceo')">
+              <span>👔</span>
+              <div>
+                <div class="btn-preset-name">FACILITY CEO (MARCUS VANCE)</div>
+                <div class="btn-preset-sub">Status: Authorized (Clearance Lvl 5)</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Upload Custom Photo -->
+          <div class="upload-row">
+            <label class="btn btn-ghost btn-sm btn-upload" for="fileInput">
+              📁 UPLOAD CUSTOM FACE PHOTO
+            </label>
+            <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileUpload(event)" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COL 2: FGSM ADVERSARIAL INJECTION LAB ─────────────────── -->
+    <section class="panel panel-attack">
+      <div class="panel-header">
+        <span class="panel-icon">⚡</span>
+        <h2>ADVERSARIAL <span class="accent-red">INJECTION LAB</span></h2>
+        <div class="panel-tag">TRIAD ATTACK ENGINE</div>
+      </div>
+
+      <div class="attack-body">
+        <!-- Educational Analogy Banner -->
+        <div class="analogy-card">
+          <div class="analogy-header">
+            <span>💡</span> THE ANALOGY: "DIGITAL CATARACTS"
+          </div>
+          <p class="analogy-text">
+            <em>"To human eyes, the visitor's face does not change at all. To the AI's mathematical weights, every single pixel was nudged to forge the CEO's biometric key."</em>
+          </p>
+        </div>
+
+        <!-- TRIAD ATTACK ENGINE (The 3 Sliders) -->
+        <div class="triad-container" id="triadContainer">
+          <div class="triad-header-row">
+            <span class="triad-title">TRIAD ATTACK ENGINE</span>
+            <span class="triad-sub mono">CALIBRATE ALL 3 VECTORS TO BREACH</span>
+          </div>
+
+          <!-- Slider 1: Perturbation Amplitude (Epsilon) -->
+          <div class="triad-slider-card">
+            <div class="tsc-top">
+              <div class="tsc-left">
+                <span class="tsc-num">01</span>
+                <div>
+                  <div class="tsc-title">NOISE AMPLITUDE (ε)</div>
+                  <div class="tsc-desc">Gradient Step Energy Budget</div>
+                </div>
+              </div>
+              <span class="tsc-val mono accent-cyan" id="dispAmp">ε = 0.000 [0%]</span>
+            </div>
+            <input type="range" id="sliderAmp" class="cyber-slider" min="0" max="100" value="0" oninput="onTriadSliderChange()" />
+            <div class="tsc-range-labels mono">
+              <span>0% (ORIGINAL)</span>
+              <span>50% (SUB-PERCEPTIBLE)</span>
+              <span>100% (MAX ENERGY)</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: Spatial Frequency Dispersion -->
+          <div class="triad-slider-card">
+            <div class="tsc-top">
+              <div class="tsc-left">
+                <span class="tsc-num">02</span>
+                <div>
+                  <div class="tsc-title">FREQUENCY DISPERSION (σ)</div>
+                  <div class="tsc-desc">High-Pass Biometric Landmark Filter</div>
+                </div>
+              </div>
+              <span class="tsc-val mono accent-cyan" id="dispFreq">0% (DISPERSED)</span>
+            </div>
+            <input type="range" id="sliderFreq" class="cyber-slider" min="0" max="100" value="0" oninput="onTriadSliderChange()" />
+            <div class="tsc-range-labels mono">
+              <span>0% (DIFFUSE NOISE)</span>
+              <span>50% (CONTOUR FOCUS)</span>
+              <span>100% (EYE/JAW MASK)</span>
+            </div>
+          </div>
+
+          <!-- Slider 3: CEO Manifold Gradient Alignment -->
+          <div class="triad-slider-card">
+            <div class="tsc-top">
+              <div class="tsc-left">
+                <span class="tsc-num">03</span>
+                <div>
+                  <div class="tsc-title">CEO VECTOR ALIGNMENT (θ)</div>
+                  <div class="tsc-desc">Manifold Gradient Cosine Projection</div>
+                </div>
+              </div>
+              <span class="tsc-val mono accent-cyan" id="dispAlign">0% (ORTHOGONAL)</span>
+            </div>
+            <input type="range" id="sliderAlign" class="cyber-slider" min="0" max="100" value="0" oninput="onTriadSliderChange()" />
+            <div class="tsc-range-labels mono">
+              <span>0% (RANDOM STATIC)</span>
+              <span>50% (APPROACHING)</span>
+              <span>100% (CEO LOCK)</span>
+            </div>
+          </div>
+
+          <!-- Exploit Convergence Gauge (Multi-Vector Multiplier) -->
+          <div class="convergence-card" id="convergenceCard">
+            <div class="cc-header">
+              <span class="cc-label">TRIAD EXPLOIT CONVERGENCE</span>
+              <span class="cc-val mono accent-red" id="convergenceVal">0.0%</span>
+            </div>
+            <div class="cc-track">
+              <div class="cc-fill fill-red" id="convergenceFill" style="width: 0%"></div>
+            </div>
+            <div class="cc-status mono" id="convergenceStatus">
+              DEFENSES INTACT — ALL 3 VECTORS MUST COINCIDE
+            </div>
+          </div>
+        </div>
+
+        <!-- Perturbation Microscope (Isolated Noise Map) -->
+        <div class="microscope-section">
+          <div class="microscope-header">
+            <span>🔬</span>
+            <span class="microscope-title">PERTURBATION MICROSCOPE (NOISE AMPLIFIED 20×)</span>
+          </div>
+          <div class="microscope-grid">
+            <div class="microscope-box">
+              <img id="noiseMapImg" src="" alt="FGSM Noise Gradient" class="noise-map-display" />
+              <div class="box-tag mono">Δx = -ε · sign(∇x ℒ)</div>
+            </div>
+            <div class="microscope-metrics mono">
+              <div class="metric-row">
+                <span class="metric-lbl">TARGET CLASS:</span>
+                <span class="metric-val accent-matrix" id="targetClassVal">CEO (Clearance 5)</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-lbl">L2 DISTORTION:</span>
+                <span class="metric-val" id="l2Val">0.0000</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-lbl">L-INF NORM:</span>
+                <span class="metric-val" id="linfVal">0.0000</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-lbl">ATTACK METHOD:</span>
+                <span class="metric-val accent-cyan">Targeted FGSM Triad</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Educational Formula Footer -->
+        <div class="formula-box mono">
+          <span class="accent-cyan">x_adv = clamp( x - ε · sign(∇x ℒ(f(x), y_CEO)), 0, 1 )</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COL 3: NEURAL DECISION & CHECKPOINT STATUS ────────────── -->
+    <section class="panel panel-decision">
+      <div class="panel-header">
+        <span class="panel-icon">🏛️</span>
+        <h2>CHECKPOINT <span class="accent-cyan">DECISION</span></h2>
+        <div class="panel-tag">SECURITY ENFORCEMENT</div>
+      </div>
+
+      <div class="decision-body">
+        <!-- Giant Clearance Status Card -->
+        <div class="clearance-banner denied" id="clearanceBanner">
+          <div class="cb-icon" id="cbIcon">🛑</div>
+          <div class="cb-status-title" id="cbStatusTitle">ACCESS DENIED</div>
+          <div class="cb-status-sub mono" id="cbStatusSub">THREAT LEVEL 4: UNREGISTERED INTRUDER</div>
+        </div>
+
+        <!-- 2-Class Confidence Spectrum Bar Chart (ONLY Intruder vs CEO) -->
+        <div class="spectrum-section">
+          <div class="spectrum-header">
+            <span>🧠</span> NEURAL CLASSIFIER CONFIDENCE SPECTRUM
+          </div>
+
+          <!-- Class 1: Intruder -->
+          <div class="conf-bar-group">
+            <div class="cbg-header">
+              <span class="cbg-label">🦹 UNAUTHORIZED INTRUDER</span>
+              <span class="cbg-val mono accent-red" id="probIntruder">99.8%</span>
+            </div>
+            <div class="cbg-track">
+              <div class="cbg-fill fill-red" id="fillIntruder" style="width: 99.8%"></div>
+            </div>
+          </div>
+
+          <!-- Class 2: CEO -->
+          <div class="conf-bar-group">
+            <div class="cbg-header">
+              <span class="cbg-label">👔 CHIEF EXECUTIVE (CEO)</span>
+              <span class="cbg-val mono accent-matrix" id="probCeo">0.2%</span>
+            </div>
+            <div class="cbg-track">
+              <div class="cbg-fill fill-green" id="fillCeo" style="width: 0.2%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Facility CEO Target Dossier Card (Side-by-side comparison magic) -->
+        <div class="ceo-dossier-card">
+          <div class="cdc-top">
+            <img src="/static/img/ceo.jpg" alt="CEO Marcus Vance" class="cdc-thumb" />
+            <div class="cdc-info">
+              <div class="cdc-target-tag mono">FACILITY TARGET IDENTITY</div>
+              <div class="cdc-name">MARCUS VANCE</div>
+              <div class="cdc-role mono">CHIEF EXECUTIVE OFFICER // ID #ITC-88401</div>
+            </div>
+          </div>
+          <div class="cdc-similarity">
+            <div class="cdc-sim-header mono">
+              <span>BIOMETRIC SIMILARITY VECTOR</span>
+              <span id="targetSimVal" class="accent-matrix">0.2% MATCH</span>
+            </div>
+            <div class="cdc-sim-track">
+              <div class="cdc-sim-fill" id="targetSimFill" style="width: 0.2%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio & Cybernetic AI Voice Synthesizer -->
+        <div class="audio-control-card">
+          <div class="acc-header">
+            <span>🔊</span> BIOMETRIC GATE SYNTHESIZER &amp; AI VOICE
+          </div>
+          <div class="acc-actions">
+            <button class="btn btn-sm btn-ghost" onclick="toggleAudio()" id="btnAudio">
+              🔊 AUDIO &amp; VOICE: ENABLED
+            </button>
+            <button class="btn btn-sm btn-primary" onclick="simulateGateChime()">
+              🔔 TEST CHIME
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="activity-log">
+          <div class="log-header">
+            <span class="accent-cyan">▶</span> INFERENCE AUDIT LOG
+          </div>
+          <div class="log-entries mono" id="auditLog"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITC // STATION 3 // SOCIAL ENGINEERING &amp; PHONE MIRROR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/control.css" />
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="grid-bg"></div>
+
+  <!-- ─── TOPBAR ─────────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="/static/img/itc-logo.png" alt="ITC" class="logo" />
+      <div class="topbar-title">
+        <span class="station-tag">STATION 03 // EXHIBIT EXPLOIT</span>
+        <h1>RF PROXIMITY SCANNER &amp; <span class="accent-red">DEVICE MIRROR</span></h1>
+      </div>
+    </div>
+    <div class="topbar-center">
+      <div class="server-ip-display">
+        <span class="label-small">TARGET LINK</span>
+        <span class="ip-value mono" id="serverIpDisplay">http://{{ local_ip }}:5002/phone</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="phone-status-badge" id="phoneBadge">
+        <div class="pulse-dot" id="pulseDot"></div>
+        <span id="phoneStatusText">SCANNING AREA</span>
+      </div>
+      <div class="time-display mono" id="clockDisplay"></div>
+    </div>
+  </header>
+
+  <!-- ─── MAIN GRID ───────────────────────────────────────────────────── -->
+  <main class="dashboard">
+
+    <!-- ── COL 1: PROXIMITY RADAR SCANNER ──────────────────────────── -->
+    <section class="panel panel-scanner">
+      <div class="panel-header">
+        <span class="panel-icon">📡</span>
+        <h2>PROXIMITY <span class="accent-cyan">RADAR</span></h2>
+        <div class="panel-tag">RF / BLUETOOTH / WI-FI</div>
+      </div>
+
+      <!-- Radar Animation Canvas -->
+      <div class="radar-box">
+        <div class="radar-circle rc-1"></div>
+        <div class="radar-circle rc-2"></div>
+        <div class="radar-circle rc-3"></div>
+        <div class="radar-crosshair-h"></div>
+        <div class="radar-crosshair-v"></div>
+        <div class="radar-sweep"></div>
+        <!-- Blips for detected devices -->
+        <div class="radar-blip blip-target" id="radarTargetBlip" title="Target Device"></div>
+        <div class="radar-blip blip-other blip-1" title="iPhone (2.4m)"></div>
+        <div class="radar-blip blip-other blip-2" title="Redmi (4.1m)"></div>
+        <div class="radar-blip blip-center" title="Your Laptop (0m)"></div>
+        <div class="radar-range-label">10m RANGE</div>
+      </div>
+
+      <div class="scanner-controls">
+        <button class="btn btn-primary btn-scan" id="scanBtn" onclick="startScan()">
+          <span class="btn-icon">◉</span> RESCAN AREA
+        </button>
+        <div class="scan-meta mono" id="scanSubnet">AREA RADIUS: 10m</div>
+      </div>
+      <div class="scan-progress-bar" id="scanProgress">
+        <div class="scan-progress-fill" id="scanFill"></div>
+      </div>
+      <div class="device-count-row">
+        <span>DEVICES IN VICINITY</span>
+        <span class="accent-matrix mono" id="deviceCount">—</span>
+      </div>
+      <div class="device-list" id="deviceList">
+        <div class="device-placeholder">
+          <div class="placeholder-icon">📡</div>
+          <p>Scanning 10m radius for nearby mobile devices…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COL 2: LIVE PHONE SCREEN MIRROR ────────────────────────── -->
+    <section class="panel panel-phone">
+      <div class="panel-header">
+        <span class="panel-icon">📱</span>
+        <h2>LIVE <span class="accent-cyan">DEVICE STREAM</span></h2>
+        <div class="panel-tag" id="targetPanelTag">AWAITING CONNECTION</div>
+      </div>
+
+      <div class="screen-mirror-wrapper">
+        <!-- Physical Smartphone Mockup Frame -->
+        <div class="phone-frame" id="phoneFrame">
+          <div class="phone-bezel">
+            <!-- Speaker & Camera Hole -->
+            <div class="phone-camera-hole"></div>
+
+            <!-- Phone Screen Viewport -->
+            <div class="phone-screen" id="phoneScreen">
+
+              <!-- State 1: QR & Link Lure (before victim grants permission) -->
+              <div class="screen-view view-lure" id="viewLure">
+                <div class="screen-header-bar">
+                  <span class="screen-time mono" id="phoneMockTime">12:30</span>
+                  <span class="screen-wifi">📶 🔋 98%</span>
+                </div>
+                <div class="lure-content">
+                  <div class="lure-badge">ITC WIRELESS PROXIMITY</div>
+                  <div class="lure-title">CONNECT TARGET PHONE</div>
+                  <p class="lure-desc">Scan QR code or open link from the phone:</p>
+
+                  <div class="qr-container">
+                    <div id="qrCanvas"></div>
+                  </div>
+
+                  <div class="lure-url mono" id="phoneUrlDisplay">{{ phone_url }}</div>
+                  <button class="btn btn-sm btn-primary" onclick="copyPhoneUrl()">📋 COPY LINK</button>
+
+                  <div class="lure-instruction">
+                    <span class="accent-matrix">●</span> On the phone, accept security prompt to mirror screen
+                  </div>
+                </div>
+              </div>
+
+              <!-- State 2: Live Screen Stream (victim phone mirrored here) -->
+              <div class="screen-view view-live" id="viewLive" style="display:none">
+                <div class="screen-header-bar live-bar">
+                  <span class="live-rec-dot">● REC</span>
+                  <span class="live-target-name mono" id="liveTargetName">SAMSUNG GALAXY</span>
+                  <span class="screen-wifi" id="liveBatteryDisplay">🔋 85%</span>
+                </div>
+
+                <!-- Live Stream Canvas / Viewport -->
+                <div class="live-viewport-container">
+                  <div class="stream-overlay-flash" id="streamFlash"></div>
+                  
+                  <!-- Mirrored Phone Viewport -->
+                  <div class="mirrored-phone-ui" id="mirroredPhoneUi">
+                    <div class="app-header">
+                      <div class="app-title-tag">VICTIM ACTIVE SCREEN</div>
+                      <div class="live-fps mono">30 FPS // LOW LATENCY</div>
+                    </div>
+                    
+                    <div class="mirrored-screen-content" id="mirroredContent">
+                      <!-- Live Simulated View of Victim Phone -->
+                      <div class="victim-lock-banner">
+                        <span class="accent-red">⚠️ REMOTE ACCESS ACTIVE</span>
+                        <div class="victim-subtitle">Social Engineering Exploit Verified</div>
+                      </div>
+
+                      <div class="victim-app-grid">
+                        <div class="victim-app-icon" style="background:#4285F4"><span>🌐</span><label>Browser</label></div>
+                        <div class="victim-app-icon" style="background:#0F9D58"><span>💬</span><label>Messages</label></div>
+                        <div class="victim-app-icon" style="background:#DB4437"><span>📷</span><label>Photos</label></div>
+                        <div class="victim-app-icon" style="background:#F4B400"><span>⚙️</span><label>Settings</label></div>
+                      </div>
+
+                      <div class="victim-live-activity" id="victimActivityBox">
+                        <div class="val-header">LIVE SENSOR TELEMETRY</div>
+                        <div class="val-row"><span>TILT X / Y</span><span class="accent-cyan mono" id="mirrorTilt">0° / 0°</span></div>
+                        <div class="val-row"><span>BATTERY</span><span class="accent-matrix mono" id="mirrorBattery">85%</span></div>
+                        <div class="val-row"><span>LAST ACTION</span><span class="accent-red mono" id="mirrorAction">Screen Active</span></div>
+                      </div>
+
+                      <div class="victim-stream-status">
+                        <div class="stream-wave">
+                          <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="stream-text">STREAMING TARGET PHONE DISPLAY</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- Home Bar Indicator -->
+            <div class="phone-home-indicator"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COL 3: ATTACK CONTROLS ─────────────────────────────────── -->
+    <section class="panel panel-attacks">
+      <div class="panel-header">
+        <span class="panel-icon">⚡</span>
+        <h2>ATTACK <span class="accent-red">CONTROLS</span></h2>
+        <div class="panel-tag" id="attackPanelTag">READY</div>
+      </div>
+
+      <div class="attack-zone" id="attackZone">
+        <!-- Target Info Pill -->
+        <div class="active-target-pill" id="activeTargetPill">
+          <div class="atp-icon">🎯</div>
+          <div class="atp-info">
+            <div class="atp-name" id="atpName">Samsung Galaxy</div>
+            <div class="atp-dist mono" id="atpDist">PROXIMITY: 0.1m AWAY (IN HAND)</div>
+          </div>
+          <div class="atp-status" id="atpStatus">ARMED</div>
+        </div>
+
+        <!-- NOTIFICATION BLASTER -->
+        <div class="attack-card attack-card-primary" id="card-spam">
+          <div class="attack-card-header">
+            <span class="attack-icon">🔔</span>
+            <span class="attack-name">POPUP &amp; NOTIFICATION BLASTER</span>
+          </div>
+          <p class="attack-desc">Triggers an aggressive sequence of full-screen alerts on the phone until victim grants permission.</p>
+          <div class="spam-controls">
+            <div class="count-selector">
+              <span>BURST COUNT:</span>
+              <button class="count-btn" onclick="adjustCount(-1)">−</button>
+              <span class="count-display mono accent-red" id="spamCount">1</span>
+              <button class="count-btn" onclick="adjustCount(1)">+</button>
+            </div>
+            <button class="btn btn-danger btn-attack" id="btnSpam" onclick="launchSpam()">
+              ⚡ BLAST POPUPS NOW
+            </button>
+            <button class="btn btn-attack" id="btnUnlock" style="margin-top:0.35rem;background:linear-gradient(135deg, #00FF66, #00CC52);color:#08090C;box-shadow:0 0 15px rgba(0,255,102,0.3)" onclick="remoteUnlockPhone()">
+              🔓 RELEASE / UNLOCK DEVICE
+            </button>
+          </div>
+        </div>
+
+        <!-- FORCE SCREEN STREAM -->
+        <div class="attack-card" id="card-stream">
+          <div class="attack-card-header">
+            <span class="attack-icon">🔴</span>
+            <span class="attack-name">FORCE SCREEN MIRROR</span>
+          </div>
+          <p class="attack-desc">Prompt victim to authorize live viewport stream to this dashboard.</p>
+          <button class="btn btn-primary btn-attack" onclick="requestScreenMirror()">
+            🎥 REQUEST SCREEN MIRROR
+          </button>
+        </div>
+
+        <!-- CUSTOM MESSAGE -->
+        <div class="attack-card" id="card-msg">
+          <div class="attack-card-header">
+            <span class="attack-icon">📩</span>
+            <span class="attack-name">CUSTOM ALERT OVERLAY</span>
+          </div>
+          <p class="attack-desc">Push a custom spoofed security warning to victim screen.</p>
+          <div class="msg-input-row">
+            <input type="text" class="msg-input mono" id="customMsg" maxlength="120"
+                   placeholder="Enter message..." value="⚠️ CRITICAL EXPLOIT: Tap OK to Disconnect" />
+            <button class="btn btn-primary btn-sm" onclick="sendCustomMsg()">SEND</button>
+          </div>
+        </div>
+
+        <!-- AUDIO SENSORY OVERRIDE: SIREN & ROBOTIC VOICE -->
+        <div class="attack-card" id="card-audio-override">
+          <div class="attack-card-header">
+            <span class="attack-icon">🔊</span>
+            <span class="attack-name">AUDIO &amp; VOICE OVERRIDE</span>
+          </div>
+          <p class="attack-desc">Remotely trigger synthesized robotic voice or cyber siren on the phone speakers.</p>
+          <div class="vibrate-buttons" style="margin-top:0.2rem">
+            <button class="btn btn-danger btn-sm" onclick="triggerPhoneVoice('Warning! Critical breach. Station 03 has compromised this phone!')">
+              🗣️ "DEVICE COMPROMISED"
+            </button>
+            <button class="btn btn-vibrate btn-sm" onclick="triggerPhoneVoice('Social engineering attack confirmed. Device locked.')">
+              🗣️ "EXPLOIT CONFIRMED"
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="triggerPhoneSiren(4000)">
+              🚨 SOUND ALARM SIREN
+            </button>
+          </div>
+        </div>
+
+        <!-- VIBRATE -->
+        <div class="attack-card" id="card-vibrate">
+          <div class="attack-card-header">
+            <span class="attack-icon">📳</span>
+            <span class="attack-name">REMOTE HAPTIC VIBRATION</span>
+          </div>
+          <div class="vibrate-buttons">
+            <button class="btn btn-vibrate" onclick="sendVibrate([200,100,200])">PULSE</button>
+            <button class="btn btn-vibrate" onclick="sendVibrate([200,100,200,100,200,100,600,100,600,100,600,100,200,100,200,100,200])">SOS</button>
+            <button class="btn btn-vibrate" onclick="sendVibrate([100,50,100,50,100,50,100,50,100])">RAPID</button>
+            <button class="btn btn-vibrate" onclick="sendVibrate([1200])">LONG BUZZ</button>
+          </div>
+        </div>
+
+        <!-- EDUCATIONAL SUMMARY -->
+        <div class="edu-card">
+          <div class="edu-header">🎓 VISITOR TAKEAWAY</div>
+          <ul class="edu-list">
+            <li>Malicious links use <strong>UX Fatigue</strong> to force clicks.</li>
+            <li>Once permission is granted, your device transmits live data.</li>
+            <li><strong>Rule:</strong> Never accept security prompts on unknown Wi-Fi!</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Activity log -->
+      <div class="activity-log">
+        <div class="log-header">
+          <span class="accent-cyan">▶</span> ACTIVITY LOG
+          <button class="clear-log-btn" onclick="clearLog()">CLR</button>
+        </div>
+        <div class="log-entries mono" id="activityLog"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/js/control.js"></script>
+  <script>
+    const phoneUrl = "{{ phone_url }}";
+    function buildQR(url) {
+      const canvas = document.getElementById("qrCanvas");
+      if (!canvas) return;
+      canvas.innerHTML = "";
+      new QRCode(canvas, {
+        text: url,
+        width: 140, height: 140,
+        colorDark: "#00F0FF", colorLight: "#08090C",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+    buildQR(phoneUrl);
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("clockDisplay").textContent =
+        now.toLocaleTimeString("en-GB", { hour12: false });
+      const mockTime = document.getElementById("phoneMockTime");
+      if (mockTime) mockTime.textContent = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+    }
+    setInterval(updateClock, 1000); updateClock();
+  </script>
+</body>
+</html>

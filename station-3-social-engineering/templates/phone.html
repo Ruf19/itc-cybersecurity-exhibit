@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>ITC // Mobile Security Node</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/phone.css" />
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <!-- ── SPLASH SCREEN ───────────────────────────────────────────────── -->
+  <div class="splash" id="splash">
+    <img src="/static/img/itc-logo.png" alt="ITC" class="splash-logo" />
+    <div class="splash-title">ITC EXHIBIT SYSTEM</div>
+    <div class="splash-sub">DEVICE PROXIMITY VERIFICATION</div>
+    <div class="scan-ring"></div>
+    <div class="scan-ring scan-ring-2"></div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="splashProgress"></div>
+    </div>
+    <div class="progress-label mono" id="splashLabel">SEARCHING FOR STATIONS...</div>
+  </div>
+
+  <!-- ── MAIN PHONE PAGE ─────────────────────────────────────────────── -->
+  <div class="phone-main" id="phoneMain" style="display:none">
+    <header class="phone-header">
+      <img src="/static/img/itc-logo.png" alt="ITC" class="ph-logo" />
+      <div>
+        <div class="ph-title" id="phoneHeaderTitle">SAMSUNG GALAXY</div>
+        <div class="ph-sub mono" id="connStatus">PROXIMITY: 0.1m TO LAPTOP</div>
+      </div>
+      <div class="conn-dot active" id="connDot"></div>
+    </header>
+
+    <!-- Top Security Banner -->
+    <div class="security-banner" id="securityBanner">
+      <div class="sb-icon">🛡️</div>
+      <div class="sb-text">
+        <div class="sb-title">DEVICE CONNECTED TO STATION 03</div>
+        <div class="sb-desc">Your device telemetry is synchronized with the exhibit monitor.</div>
+      </div>
+    </div>
+
+    <!-- Interactive Simulated Apps Area -->
+    <div class="interactive-apps-area">
+      <div class="iaa-title">INTERACTIVE VICTIM APPS (TAP TO TEST MIRROR):</div>
+      <div class="iaa-grid">
+        <button class="app-btn" onclick="triggerAppClick('Browser Opened')">
+          <span class="app-ico">🌐</span>
+          <span class="app-lbl">Chrome</span>
+        </button>
+        <button class="app-btn" onclick="triggerAppClick('Opened Private Chats')">
+          <span class="app-ico">💬</span>
+          <span class="app-lbl">Messages</span>
+        </button>
+        <button class="app-btn" onclick="triggerAppClick('Viewing Photo Gallery')">
+          <span class="app-ico">📷</span>
+          <span class="app-lbl">Gallery</span>
+        </button>
+        <button class="app-btn" onclick="triggerAppClick('Accessing Passwords')">
+          <span class="app-ico">⚙️</span>
+          <span class="app-lbl">Settings</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Real-time Live Sensor Panel -->
+    <div class="sensor-panel" id="sensorPanel">
+      <div class="sensor-row">
+        <div class="s-card">
+          <div class="s-icon">🔋</div>
+          <div class="s-label">BATTERY</div>
+          <div class="s-val" id="pBattery">85%</div>
+        </div>
+        <div class="s-card">
+          <div class="s-icon">📡</div>
+          <div class="s-label">MIRROR STREAM</div>
+          <div class="s-val accent-green" id="pStatus">ONLINE</div>
+        </div>
+      </div>
+      <div class="sensor-row">
+        <div class="s-card">
+          <div class="s-icon">↕</div>
+          <div class="s-label">TILT β</div>
+          <div class="s-val" id="pBeta">0°</div>
+        </div>
+        <div class="s-card">
+          <div class="s-icon">↔</div>
+          <div class="s-label">TILT γ</div>
+          <div class="s-val" id="pGamma">0°</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational Lesson Footer -->
+    <div class="edu-footer">
+      <div class="edu-title">🎓 SOCIAL ENGINEERING LESSON</div>
+      <p>When you scanned this link, you allowed the exhibit station to read your device telemetry and simulate screen mirroring. In the real world, phishing links exploit this trust to compromise devices!</p>
+    </div>
+  </div>
+
+  <!-- ── FULLSCREEN EMERGENCY SIREN STROBE ────────────────────────── -->
+  <div class="siren-strobe-overlay" id="sirenStrobe" style="display:none">
+    <div class="siren-warning-badge">🚨 CRITICAL SECURITY OVERRIDE</div>
+    <div class="siren-big-icon">⚠️</div>
+    <div class="siren-title">REMOTE INTRUSION ACTIVE</div>
+    <div class="siren-sub mono" id="sirenSub">STATION 03 // DEVICE CONTROL ENGAGED</div>
+  </div>
+
+  <!-- ── AGGRESSIVE SPAM OVERLAY ─────────────────────────────────────── -->
+  <div class="spam-overlay" id="spamOverlay" style="display:none">
+    <div class="spam-box">
+      <div class="spam-badge">⚠️ CRITICAL EXPLOIT ALERT</div>
+      <div class="spam-title" id="spamTitle">ACCESS REQUEST</div>
+      <div class="spam-msg" id="spamMsg">Station 03 is requesting full telemetry and display mirror authorization!</div>
+      <div class="spam-counter mono" id="spamCounter">ALERT 1 OF 5</div>
+      <button class="spam-ok-btn" id="spamOkBtn" onclick="dismissSpam()">
+        ⚡ ALLOW ACCESS &amp; CLEAR
+      </button>
+    </div>
+  </div>
+
+  <!-- ── TOAST ───────────────────────────────────────────────────────── -->
+  <div class="ph-toast" id="phToast"></div>
+
+  <script src="/static/js/phone.js"></script>
+  <script>
+    const SERVER_IP = "{{ server_ip }}";
+  </script>
+</body>
+</html>
